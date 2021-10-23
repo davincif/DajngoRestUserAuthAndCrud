@@ -1,0 +1,6 @@
+# environment
+.virenv/
+
+# python
+*.pyc
+__pycache__/
