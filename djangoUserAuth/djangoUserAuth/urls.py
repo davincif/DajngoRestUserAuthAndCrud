@@ -17,10 +17,11 @@ from django.contrib import admin
 from django.urls import path
 from rest_framework_jwt.views import obtain_jwt_token
 
-from .views import all_users
+from .views import all_users, crud_users
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api-token-auth/', obtain_jwt_token),
+    path('api-token-auth', obtain_jwt_token),
     path('v1/users/', all_users),
+    # path('v1/users/<id>/', crud_users),
 ]
