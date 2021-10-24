@@ -10,6 +10,9 @@ virtualenv --python=python3 .virenv
 source ./virenv/bin/activate
 pip install -r requirements.txt
 
+# craete 1º super user
+python manage.py createsuperuser
+
 # run
 cd djangoUserAuth
 python manage.py runserver

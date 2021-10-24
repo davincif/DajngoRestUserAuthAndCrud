@@ -1,12 +1,24 @@
 {
 	"info": {
-		"_postman_id": "894aba5d-e0af-4558-bd47-f544f2844801",
+		"_postman_id": "d66bcf65-7594-443b-96af-f94b96a8a7e2",
 		"name": "Django Rest Authentication",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
 			"name": "login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const responseJson = pm.response.json();",
+							"pm.environment.set('AUTH_TOKEN', responseJson.token)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -129,21 +141,6 @@
 					"originalRequest": {
 						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "username",
-									"value": "asd",
-									"type": "text"
-								},
-								{
-									"key": "password",
-									"value": "asd",
-									"type": "text"
-								}
-							]
-						},
 						"url": {
 							"raw": "http://localhost:8000/v1/users/",
 							"protocol": "http",
@@ -1043,7 +1040,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6ImFzZCIsImV4cCI6MTYzNTA4NjI3OSwiZW1haWwiOiJhc2RAYXNkLmFzZCJ9.iH5lSD8rKkgytqQ3WtYZFWAoDOCzG1_R_PEUaAcEyynLIdZKpixJgmv2dQHcIOZ6fwyqqC_gFLDsvx1XcLxkzA",
+				"value": "{{AUTH_TOKEN}}",
 				"type": "string"
 			}
 		]
