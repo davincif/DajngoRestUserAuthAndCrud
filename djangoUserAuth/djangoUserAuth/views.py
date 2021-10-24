@@ -46,7 +46,10 @@ def all_users(request):
             )
 
         # return created user
-        return Response(UserSerializer(user).data)
+        return Response(
+            status=status.HTTP_201_CREATED,
+            data=UserSerializer(user).data
+        )
 
 
 @api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
@@ -100,14 +103,72 @@ def crud_users(request, id: str or int):
             user.save()
         except BaseException:
             return Response(
-                status=status.HTTP_500_INTERNAL_SERVER_ERRORm, data=[
-                    "user {} not found".format(id)])
+                status=status.HTTP_500_INTERNAL_SERVER_ERRORm,
+                data=["could not save user"]
+            )
 
         # return updated user
         return Response(UserSerializer(user).data)
     elif request.method == 'PATCH':
-        pass
-    elif request.method == 'DELETE':
-        pass
+        # search for the user to be usdated
+        user = User.objects.filter(id=id)
+        if len(user) == 0:
+            return Response(
+                status=status.HTTP_404_NOT_FOUND,
+                data=["user {} not found".format(id)]
+            )
+        else:
+            user: User = user[0]
 
-    return Response('OK')
+        # treat entries
+        data = {
+            'username': request.data.get('username'),
+            'first_name': request.data.get('first_name'),
+            'last_name': request.data.get('last_name'),
+            'password': request.data.get('password'),
+            'is_active': request.data.get('is_active'),
+        }
+
+        # udate infos
+        if data['username'] is not None:
+            user.username = data['username']
+        if data['first_name'] is not None:
+            user.first_name = data['first_name']
+        if data['last_name'] is not None:
+            user.last_name = data['last_name']
+        if data['password'] is not None:
+            user.password = data['password']
+        if data['is_active'] is not None:
+            user.is_active = data['is_active']
+
+        # save informations
+        try:
+            user.save()
+        except BaseException:
+            return Response(
+                status=status.HTTP_500_INTERNAL_SERVER_ERRORm,
+                data=["could not save user"]
+            )
+
+        # return updated user
+        return Response(UserSerializer(user).data)
+    elif request.method == 'DELETE':
+        # search for the user to be usdated
+        user = User.objects.filter(id=id)
+        if len(user) == 0:
+            return Response(
+                status=status.HTTP_404_NOT_FOUND,
+                data=["user {} not found".format(id)]
+            )
+        else:
+            user: User = user[0]
+
+    try:
+        user.delete()
+    except BaseException:
+        return Response(
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            data=["could not delete user"]
+        )
+
+    return Response(status.HTTP_204_NO_CONTENT)
