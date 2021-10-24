@@ -23,5 +23,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-token-auth', obtain_jwt_token),
     path('v1/users/', all_users),
-    # path('v1/users/<id>/', crud_users),
+    path('v1/users/<id>/', crud_users),
 ]

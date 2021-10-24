@@ -11,8 +11,10 @@ from .serializers import UserSerializer
 @api_view(['GET', 'POST'])
 def all_users(request):
     if request.method == 'GET':
+        # get all users
         users = User.objects.all()
 
+        # return them
         return Response(
             UserSerializer(
                 users,
@@ -43,52 +45,65 @@ def all_users(request):
                 data=["something went wrong when saving user"]
             )
 
+        # return created user
         return Response(UserSerializer(user).data)
 
 
 @api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
-def crud_users(request, id):
+def crud_users(request, id: str or int):
     if request.method == 'GET':
+        # search user
         user = User.objects.filter(id=id)
 
+        # return it
         return Response(
             UserSerializer(
                 user[0]
             ).data if len(user) > 0 else []
         )
     elif request.method == 'PUT':
-        print('\n\n')
-        print('>>')
+        # search for the user to be usdated
         user = User.objects.filter(id=id)
         if len(user) == 0:
-            print('\n\n', len(user), len(user) == 0, '\n')
-            Response([])
+            return Response(
+                status=status.HTTP_404_NOT_FOUND,
+                data=["user {} not found".format(id)]
+            )
         else:
-            print('-->', user)
-            user = user[0]
+            user: User = user[0]
 
-        print('====')
-        print('user.username', user.username)
-        print('user.first_name', user.first_name)
-        print('user.last_name', user.last_name)
-        print('user.password', user.password)
-        print('user.is_active', user.is_active)
+        # treat entries
+        data = {
+            'username': request.data.get('username'),
+            'first_name': request.data.get('first_name'),
+            'last_name': request.data.get('last_name'),
+            'password': request.data.get('password'),
+            'is_active': request.data.get('is_active'),
+        }
 
-        # user.username=request.username
-        # user.first_name=request.first_name
-        # user.last_name=request.last_name
-        # user.password=request.password
-        # user.is_active=request.password
+        for key in data:
+            if(not data[key]):
+                return Response(
+                    status=status.HTTP_400_BAD_REQUEST,
+                    data=["{} must be present".format(key)]
+                )
 
-        # print('+++')
-        # try:
-        #     user.save()
-        # except:
-        #     print('\n\n')
-        #     Response('eu bosnia')
+        # udate infos
+        user.username = data['username']
+        user.first_name = data['first_name']
+        user.last_name = data['last_name']
+        user.password = data['password']
+        user.is_active = data['is_active']
 
-        # print('&&&&')
-        # print('\n\n')
+        # save informations
+        try:
+            user.save()
+        except BaseException:
+            return Response(
+                status=status.HTTP_500_INTERNAL_SERVER_ERRORm, data=[
+                    "user {} not found".format(id)])
+
+        # return updated user
         return Response(UserSerializer(user).data)
     elif request.method == 'PATCH':
         pass
